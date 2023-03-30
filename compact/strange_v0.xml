@@ -1,0 +1,103 @@
+<lccdd >
+
+  <info name="ARC"
+        title="Array of RICH Cells (ARC)"
+        author="A. Tolosa Delgado, Martin Tat, Roger Forty, Guy Wilkinson"
+        url="https://indico.cern.ch/event/1231098/"
+        status="development"
+        version="$version 0. Date: 2023-01-19. Author emails: alvaro.tolosa.delgado@cern.ch, martin.tat@physics.ox.ac.uk$">
+    <comment>The compact format of the ARC detector</comment>
+  </info>
+
+<includes>
+  <gdmlFile ref="elements.xml"/>
+</includes>
+
+<materials>
+   <element Z="13" formula="Al" name="Al" >
+  <atom type="A" unit="g/mol" value="26.9815" />
+ </element>
+ <material formula="Al" name="Aluminum" state="solid" >
+  <RL type="X0" unit="cm" value="8.89632" />
+  <NIL type="lambda" unit="cm" value="38.8766" />
+  <D type="density" unit="g/cm3" value="2.699" />
+  <composite n="1" ref="Al" />
+ </material>
+    <material name="Vacuum">
+      <D type="density" unit="g/cm3" value="0.0000000001"/>
+  <composite n="1" ref="Al" />
+    </material>
+    <material name="Air">
+      <D type="density" unit="g/cm3" value="0.0000000001"/>
+  <composite n="1" ref="Al" />
+    </material>
+</materials>
+
+<display>
+  <vis name="vessel_vis"  r="236/256" g="237/256" b="232/256" alpha="0.9"  showDaughters="true" visible="true" />
+  <vis name="gas_vis"     r="227/256" g="239/256" b="217/256" alpha="0.1"  showDaughters="true" visible="true" />
+  <vis name="aerogel_vis" r="244/256" g="177/256" b="132/256" alpha="0.5"  showDaughters="true" visible="true" />
+  <vis name="cooling_vis" r="254/256" g="230/256" b="151/256" alpha="0.5"  showDaughters="true" visible="true" />
+  <vis name="sensor_vis"  r="255/256" g="0/256"   b="0/256"   alpha="1.0"  showDaughters="true" visible="true" />
+  <vis name="filter_vis"  r="0/256"   g="96/256"  b="156/256" alpha="1.0"  showDaughters="true" visible="true" />
+  <vis name="mirror_vis"  r="255/256" g="230/256" b="153/256" alpha="1.0"  showDaughters="true" visible="true" />
+  <vis name="no_vis" showDaughters="false" visible="false" />
+</display>
+
+<define>
+  <constant name="world_side"             value="1*m"      />
+  <constant name="world_x"                value="world_side"/>
+  <constant name="world_y"                value="world_side"/>
+  <constant name="world_z"                value="world_side"/>
+  <constant name="CELL_X"                 value="27*cm"     />
+  <constant name="CELL_Y"                 value="27*cm"     />
+  <constant name="CELL_Z"                 value="20*cm"     />
+  <constant name="CELL_WALL_THICKNESS"    value="1.0*cm"    />
+  <constant name="SENSOR_THICKNESS"       value="0.2*cm"    />
+  <constant name="SENSOR_X"               value="8.0*cm"    />
+  <constant name="SENSOR_Y"               value="8.0*cm"    />
+  <constant name="SENSOR_NStripsX"        value="100"       />
+  <constant name="SENSOR_NStripsY"        value="100"       />
+  <constant name="SENSOR_pitchX"          value="0.08*cm" />
+  <constant name="SENSOR_pitchY"          value="0.08*cm" />
+  <constant name="SENSOR_Y"               value="8.0*cm"    />
+  <constant name="MIRROR_THICKNESS"       value="0.2*cm"    />
+  <constant name="MIRROR_RADIUS"          value="36.9*cm"   />
+  <constant name="COOLING_THICKNESS"      value="0.5*cm"    />
+  <constant name="AEROGEL_THICKNESS"      value="1.0*cm"    />
+</define>
+
+<detectors>
+  <detector
+    id="1"
+    name="ARC_DETECTORNAME"
+    type="STRANGETYPE3"
+    gas="C4F10_PFRICH"
+    material="CarbonFibStr"
+    vis_vessel="vessel_vis"
+    vis_gas="gas_vis"
+    readout="ARC_HITS"
+    >
+
+    <dimensions
+      cell_x="CELL_X"
+      cell_y="CELL_Y"
+      cell_z="CELL_Z"
+      cell_wall_thickness="CELL_WALL_THICKNESS"
+      />
+  </detector>
+</detectors>
+
+<readouts>
+  <readout name="ARC_HITS">
+    <segmentation
+      type="CartesianGridXY"
+      grid_size_x="0.8*mm"
+      grid_size_y="0.8*mm"
+      offset_x="-0.5*(100-1)*0.8*mm"
+      offset_y="-0.5*(100-1)*0.8*mm"
+      />
+    <id>system:8,module:12,x:32:-16,y:-16</id>  </readout>
+</readouts>
+
+</lccdd>

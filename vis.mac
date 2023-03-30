@@ -1,0 +1,29 @@
+/vis/open OGL 600x600-0+0
+/vis/verbose errors
+/vis/drawVolume
+/vis/viewer/set/viewpointVector -1 0 0
+/vis/viewer/set/lightsVector -1 0 0
+
+# Specify style (surface, wireframe, auxiliary edges,...)
+/vis/viewer/set/style surface
+/vis/viewer/set/auxiliaryEdge true
+/vis/viewer/set/lineSegmentsPerCircle 100
+
+/vis/scene/add/axes    # Simple axes: x=red, y=green, z=blue.
+/vis/scene/add/date    # Date stamp
+
+/vis/set/colour red
+/vis/set/lineWidth 2
+/vis/scene/add/frame   # Simple frame around the view
+/vis/set/colour        # Revert to default colour (white)
+/vis/set/lineWidth     # Revert to default line width (1.)
+/vis/enable
+/vis/viewer/flush
+
+/vis/geometry/set/visibility world_volume 0 false
+/vis/viewer/set/viewpointThetaPhi 120 150
+/vis/viewer/set/autoRefresh true
+/vis/verbose warnings
+
+/vis/viewer/centreAndZoomInOn ARC_DETECTORNAME_0
+
