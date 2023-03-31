@@ -49,14 +49,14 @@ TessellatedSolid CreatePyramid(double height_pyramid = 10 * cm, double aperture_
   for (unsigned int i = 2; i < 7; i++)
   {
     // definition of side of pyramid
-    shape->AddFacet(0, i, i + 1);
+    shape->AddFacet(0, i + 1, i);
     // definition of part of base of pyramid
     shape->AddFacet(1, i, i + 1);
   }
-
+  
   //-- last facet added by hand
   // definition of side of pyramid
-  shape->AddFacet(0, 7, 2);
+  shape->AddFacet(0, 2, 7);
   // definition of part of base of pyramid
   shape->AddFacet(1, 7, 2);
 

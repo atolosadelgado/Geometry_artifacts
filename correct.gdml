@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+  <define>
+    <position name="kk_0" x="0" y="0" z="0" unit="cm"/>
+    <position name="kk_1" x="0" y="0" z="10" unit="cm"/>
+    <position name="kk_2" x="5.769964003928731" y="0" z="10" unit="cm"/>
+    <position name="kk_3" x="2.8876343909947146" y="4.9954031099179428" z="10" unit="cm"/>
+    <position name="kk_4" x="-2.8796747853555016" y="4.9999957737203164" z="10" unit="cm"/>
+    <position name="kk_5" x="-5.7699566860422866" y="0.0091895499988836719" z="10" unit="cm"/>
+    <position name="kk_6" x="-2.8955866720195802" y="-4.9907977750511838" z="10" unit="cm"/>
+    <position name="kk_7" x="2.8717078752918388" y="-5.0045757548088039" z="10" unit="cm"/>
+    <position name="ARC_DETECTORNAME_0inworld_volumepos" x="0" y="0" z="0" unit="cm"/>
+  </define>
+  <materials>
+    <element name="Al_elm" formula="Al" Z="13">
+      <atom unit="g/mole" value="26.9815"/>
+    </element>
+    <material name="Air">
+      <D unit="g/cm3" value="1e-10"/>
+      <fraction n="1" ref="Al_elm"/>
+    </material>
+    <material name="Aluminum">
+      <D unit="g/cm3" value="2.6989999999999998"/>
+      <fraction n="1" ref="Al_elm"/>
+    </material>
+  </materials>
+  <solids>
+    <box name="world_volume_shape_0x55a1b4d803d0" x="200" y="200" z="200" lunit="cm"/>
+    <box name="ARC_DETECTORNAME_shape_0x55a1b4de1ea0_left" x="2" y="2" z="2" lunit="cm"/>
+    <tessellated name="kk" lunit="cm">
+      <triangular vertex1="kk_0" vertex2="kk_3" vertex3="kk_2" type="ABSOLUTE"/>
+      <triangular vertex1="kk_1" vertex2="kk_2" vertex3="kk_3" type="ABSOLUTE"/>
+      <triangular vertex1="kk_0" vertex2="kk_4" vertex3="kk_3" type="ABSOLUTE"/>
+      <triangular vertex1="kk_1" vertex2="kk_3" vertex3="kk_4" type="ABSOLUTE"/>
+      <triangular vertex1="kk_0" vertex2="kk_5" vertex3="kk_4" type="ABSOLUTE"/>
+      <triangular vertex1="kk_1" vertex2="kk_4" vertex3="kk_5" type="ABSOLUTE"/>
+      <triangular vertex1="kk_0" vertex2="kk_6" vertex3="kk_5" type="ABSOLUTE"/>
+      <triangular vertex1="kk_1" vertex2="kk_5" vertex3="kk_6" type="ABSOLUTE"/>
+      <triangular vertex1="kk_0" vertex2="kk_7" vertex3="kk_6" type="ABSOLUTE"/>
+      <triangular vertex1="kk_1" vertex2="kk_6" vertex3="kk_7" type="ABSOLUTE"/>
+      <triangular vertex1="kk_0" vertex2="kk_2" vertex3="kk_7" type="ABSOLUTE"/>
+      <triangular vertex1="kk_1" vertex2="kk_7" vertex3="kk_2" type="ABSOLUTE"/>
+    </tessellated>
+    <intersection name="ARC_DETECTORNAME_shape_0x55a1b4de1ea0">
+      <first ref="ARC_DETECTORNAME_shape_0x55a1b4de1ea0_left"/>
+      <second ref="kk"/>
+    </intersection>
+  </solids>
+  <structure>
+    <volume name="ARC_DETECTORNAME">
+      <materialref ref="Aluminum"/>
+      <solidref ref="ARC_DETECTORNAME_shape_0x55a1b4de1ea0"/>
+    </volume>
+    <volume name="world_volume">
+      <materialref ref="Air"/>
+      <solidref ref="world_volume_shape_0x55a1b4d803d0"/>
+      <physvol name="ARC_DETECTORNAME_0" copynumber="0">
+        <volumeref ref="ARC_DETECTORNAME"/>
+        <positionref ref="ARC_DETECTORNAME_0inworld_volumepos"/>
+      </physvol>
+    </volume>
+  </structure>
+  <setup name="default" version="1.0">
+    <world ref="world_volume"/>
+  </setup>
+</gdml>

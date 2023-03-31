@@ -40,3 +40,23 @@ materialScan compact/strange_v0.xml 0 0 -10 100 0 90
 ```
 
 Raytracing option in ROOT do not remove the artifacts. I have not tried Ray-tracing display option with G4+Qt
+
+
+==================
+
+# Solution to the problem (thanks to Evgueni Tcherniaev)
+
+The tessellated solid was constructed incorrectly. When you run Geant4 application, there is the following warning message :
+
+```
+-------- WWWW ------- G4Exception-START -------- WWWW -------
+
+*** ExceptionHandler is not defined ***
+*** G4Exception : GeomSolids1001
+      issued by : G4TessellatedSolid::SetSolidClosed()
+Defects in solid: kk - some facets have wrong orientation!
+*** This is just a warning message. ***
+-------- WWWW ------- G4Exception-END -------- WWWW -------
+```
+
+The normals of the facets in a tessellated solid should point to outside of the solid. It means that the vertices of the facets should be set in the anti-clockwise order looking from outside of the solid. In this case all lateral facets were oriented incorrectly.
