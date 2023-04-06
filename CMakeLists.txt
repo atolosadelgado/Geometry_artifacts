@@ -26,3 +26,8 @@ dd4hep_add_plugin(STRANGESOLID SOURCES src/strange_v0.cpp
   USES DD4hep::DDCore DD4hep::DDRec DD4hep::DDCond ROOT::Core ROOT::Geom ROOT::GenVector ROOT::MathCore)
 install(TARGETS STRANGESOLID LIBRARY DESTINATION lib)
 
+
+dd4hep_add_plugin(TRICKYPYR SOURCES src/tricky_pyr.cpp
+  USES DD4hep::DDCore DD4hep::DDRec DD4hep::DDCond ROOT::Core ROOT::Geom ROOT::GenVector ROOT::MathCore)
+install(TARGETS TRICKYPYR LIBRARY DESTINATION lib)
+
