@@ -23,6 +23,71 @@ using namespace dd4hep;
 using namespace dd4hep::detail;
 
 
+
+
+UnionSolid createdummy(double height_pyramid = 10 * cm, double aperture_deg = 3.)
+{
+
+
+    double r_out = height_pyramid + 10*cm;
+    double r_in  = height_pyramid;
+    double r_ave = 0.5*(r_out+r_in);
+    double r_thickness = r_out - r_in;
+
+
+    double side_out = r_out * std::tan( M_PI / 180 * aperture_deg / 2);
+    double side_in  = r_in  * std::tan( M_PI / 180 * aperture_deg / 2);
+    double apothem_out = side_out*sin( 60*deg );
+
+    auto pxfc_in = [&](int i)
+    { return side_in * std::cos( M_PI / 3. * i); };
+
+    auto pxfc = [&](int i)
+    { return side_out * std::cos( M_PI / 3. * i); };
+    auto pyfc = [&](int i)
+    { return side_out * std::sin( M_PI / 3. * i); };
+
+    using Vertex = TessellatedSolid::Vertex;
+    std::vector<Vertex> vertices;
+    vertices.reserve(16);
+
+    for (unsigned int i = 0; i < 6; i++)
+    {
+        vertices.emplace_back(Vertex(pxfc(i), pyfc(i), r_in));
+        vertices.emplace_back(Vertex(pxfc(i), pyfc(i), r_out));
+    }
+    vertices.emplace_back(Vertex(0, 0, r_in));
+    vertices.emplace_back(Vertex(0, 0, r_out));
+
+
+    double v[8][2];
+    for( int ivx = 0; ivx<4; ++ ivx)
+    {
+        v[ivx][0] = pxfc(ivx);
+        v[ivx][1] = pyfc(ivx);
+        v[ivx+4][0] = pxfc_in(ivx);
+        v[ivx+4][1] = pyfc(ivx);
+    }
+    EightPointSolid right_side( r_thickness ,&v[0][0]);
+
+    double v2[8][2];
+    for( int ivx = 0; ivx<4; ++ ivx)
+    {
+        v2[ivx][0] = pxfc(ivx + 3);
+        v2[ivx][1] = pyfc(ivx + 3);
+        v2[ivx+4][0] = pxfc_in(ivx + 3);
+        v2[ivx+4][1] = pyfc(ivx + 3);
+    }
+    EightPointSolid left_side( r_thickness ,&v2[0][0]);
+
+
+    return UnionSolid(left_side, right_side);
+
+
+}
+
+
+
 TessellatedSolid CreatePyramid_v2(double height_pyramid = 10 * cm, double aperture_deg = 60.)
 {
 
@@ -91,7 +156,7 @@ static Ref_t tricky_pyramidal_cell(Detector &desc, xml::Handle_t handle, Sensiti
 
     // Vessel
     Box vesselSolid(1 * cm, 1 * cm, 1 * cm);
-    auto shape = CreatePyramid_v2( 10*cm , 45);
+    auto shape = createdummy( 10*cm , 45);
 
 
     // Define the actual mirror as intersection of the mother volume and the hollow sphere just defined
