@@ -25,18 +25,26 @@ using namespace dd4hep::detail;
 
 
 
-UnionSolid createdummy(double height_pyramid = 10 * cm, double aperture_deg = 3.)
+UnionSolid createdummy(double height_pyramid = 10 * cm, double aperture_deg = 10.)
 {
 
 
-    double r_out = height_pyramid + 10*cm;
-    double r_in  = height_pyramid;
+    double r_out = 210*cm; // height_pyramid + 20*cm;
+    double r_in  = 190*cm; // height_pyramid;
+    double phistep = 13.333 * deg;
+    aperture_deg = phistep/2;
     double r_ave = 0.5*(r_out+r_in);
     double r_thickness = r_out - r_in;
 
 
-    double side_out = r_out * std::tan( M_PI / 180 * aperture_deg / 2);
-    double side_in  = r_in  * std::tan( M_PI / 180 * aperture_deg / 2);
+    double side_out = 148.15*mm; //r_out * std::tan( M_PI / 180 * aperture_deg / 2) /2 ;
+    double side_in  = side_out*r_in/r_out; //r_out * std::tan( M_PI / 180 * aperture_deg / 2) /2 ;
+
+//     std::cout << side_out/cm << std::endl;
+
+//     std::cin.ignore();
+
+//     double side_in  = r_in  * std::tan( M_PI / 180 * aperture_deg / 2) / 2;
     double apothem_out = side_out*sin( 60*deg );
 
     auto pxfc_in = [&](int i)
@@ -150,25 +158,44 @@ static Ref_t tricky_pyramidal_cell(Detector &desc, xml::Handle_t handle, Sensiti
     std::string detName = detElem.nameStr();
     int detID = detElem.id();
     xml::Component dims = detElem.dimensions();
-    OpticalSurfaceManager surfMgr = desc.surfaceManager();
     DetElement det(detName, detID);
     sens.setType("tracker");
 
     // Vessel
-    Box vesselSolid(1 * cm, 1 * cm, 1 * cm);
-    auto shape = createdummy( 10*cm , 45);
+//     Box vesselSolid(1 * cm, 1 * cm, 1 * cm);
+    auto shape = createdummy( 190*cm , 13.333);
 
 
     // Define the actual mirror as intersection of the mother volume and the hollow sphere just defined
     //   Solid vesselSolid_final = IntersectionSolid(vesselSolid, shape);
 
-    Volume vesselVol(detName, shape, desc.material("Aluminum"));
+    Volume vesselVol(detName+"vol", shape, desc.material("Aluminum"));
 
     // place mother volume (vessel)
     Volume motherVol = desc.pickMotherVolume(det);
-    PlacedVolume vesselPV = motherVol.placeVolume(vesselVol, Position(0, 0, 0));
+
+    Transform3D pyrTr1 =  RotationX( -90. * deg) * RotationY( -90. * deg) * Translation3D(0, 0, -190*cm);
+    PlacedVolume vesselPV = motherVol.placeVolume(vesselVol, pyrTr1);
     vesselPV.addPhysVolID("system", detID);
     det.setPlacement(vesselPV);
+
+
+      double hexagon_side_length = 14.815 * cm;
+  /// Distance in x-direction
+  double zstep = 2 * hexagon_side_length*sin( 60*deg );;
+  /// Distance in phi angle between cells
+  /// since cells are regular hexagons, this distance matches
+  /// the angle that one cell covers
+  double phistep = 13.333 * deg;
+
+     Translation3D pyrTr2 (0, 0, zstep);
+     auto pyrTr3 = RotationZ(  phistep*0.5) *Translation3D(0, 0, zstep/2);
+    motherVol.placeVolume(vesselVol, pyrTr2*pyrTr1);
+    motherVol.placeVolume(vesselVol, pyrTr3*pyrTr1);
+
+    det.setPlacement(vesselPV);
+
+
 
     return det;
 }
