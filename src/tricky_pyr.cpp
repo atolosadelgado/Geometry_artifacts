@@ -58,6 +58,8 @@ TessellatedSolid CreatePyramid_v2 ( double r_in = 191 * cm, double r_out = 202*c
     auto d = 148.15*mm;
     auto h = 256.6*mm;
     // auto h = 2*d*cos ( 30*deg );
+
+    r_out /= sqrt(1+pow(d/r_in,2));
     auto s_r  = r_out/r_in;
 
     face f_in;
