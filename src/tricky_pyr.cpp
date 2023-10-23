@@ -52,13 +52,13 @@ struct face
 
 };
 
-TessellatedSolid CreatePyramid_v2 ( double r_in = 191 * cm, double r_out = 208*cm /*, double aperture_deg = 13.333/2 * deg*/ )
+TessellatedSolid CreatePyramid_v2 ( double r_in = 191 * cm, double r_out = 202*cm /*, double aperture_deg = 13.333/2 * deg*/ )
 {
 
     auto d = 148.15*mm;
     auto h = 256.6*mm;
     // auto h = 2*d*cos ( 30*deg );
-    auto side_in  = r_out/r_in;
+    auto s_r  = r_out/r_in;
 
     face f_in;
     f_in.z = r_in;
@@ -71,12 +71,12 @@ TessellatedSolid CreatePyramid_v2 ( double r_in = 191 * cm, double r_out = 208*c
 
     face f_out;
     f_out.z = r_out;
-    f_out.A = {0   ,    s*d};
-    f_out.B = {h/2 ,  s*d/2};
-    f_out.C = {h/2 , -s*d/2};
-    f_out.D = {0  ,    -s*d};
-    f_out.E = {-h/2, -s*d/2};
-    f_out.F = {-h/2,  s*d/2};
+    f_out.A = {0   ,    s_r*d};
+    f_out.B = {h/2 ,  s_r*d/2};
+    f_out.C = {h/2 , -s_r*d/2};
+    f_out.D = {0  ,    -s_r*d};
+    f_out.E = {-h/2, -s_r*d/2};
+    f_out.F = {-h/2,  s_r*d/2};
 
 
     using Vertex = TessellatedSolid::Vertex;
@@ -200,7 +200,7 @@ static Ref_t tricky_pyramidal_cell ( Detector &desc, xml::Handle_t handle, Sensi
     Transform3D pyramidTr ( RotationZYX ( 0, -90. * deg, 0. * deg ), Translation3D ( 0, 0, 0 ) );
 
 
-    double phistep = hex_aperture*3;
+    double phistep = 13.333333*deg;//hex_aperture*3;
   double zstep =  hex_side*sin(60*deg);
 
 
@@ -218,7 +218,7 @@ static Ref_t tricky_pyramidal_cell ( Detector &desc, xml::Handle_t handle, Sensi
 //             det.setPlacement ( vesselPV );
 
 //     Transform3D pyrTr1 =  RotationX( -90. * deg) * RotationY( -90. * deg) * Translation3D(0, 0, -190*cm);
-    for( int ring = 0; ring<6; ++ring)
+    for( int ring = 0; ring<3; ++ring)
     {
 
         double phi_offset = 0 + 0.5 * phistep * (0 == ring%2);
@@ -226,7 +226,7 @@ static Ref_t tricky_pyramidal_cell ( Detector &desc, xml::Handle_t handle, Sensi
         Volume vesselVol ( Form("%s_v%d",detName.c_str(),ring), shape, desc.material ( "Aluminum" ) );
             vesselVol.setVisAttributes(desc.visAttributes(Form("mirror_vis%d", ring)));
 
-        for ( int phin = 0; phin<29; ++phin ) {
+        for ( int phin = 0; phin<3; ++phin ) {
             PlacedVolume vesselPV = motherVol.placeVolume ( vesselVol, Translation3D(0,0,mirror_abs_pos_z)*RotationZ ( phistep * phin + phi_offset )* RotationY ( 90. * deg ) );
             vesselPV.addPhysVolID ( "system", detID );
             vesselPV.addPhysVolID ( "module", phin );
