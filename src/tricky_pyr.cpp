@@ -32,63 +32,134 @@ using namespace dd4hep;
 using namespace dd4hep::rec;
 using dd4hep::SubtractionSolid;
 
+struct point2d
+{
+  double x = {0.0};
+  double y = {0.0};
 
+};
 
-TessellatedSolid CreatePyramid_v2 ( double r_in = 190 * cm, double r_out = 210*cm /*, double aperture_deg = 13.333/2 * deg*/ )
+struct face
+{
+  point2d A;
+  point2d B;
+  point2d C;
+  point2d D;
+  point2d E;
+  point2d F;
+  point2d O;
+  double z;
+
+};
+
+TessellatedSolid CreatePyramid_v2 ( double r_in = 191 * cm, double r_out = 208*cm /*, double aperture_deg = 13.333/2 * deg*/ )
 {
 
-    double r_ave = 0.5* ( r_out+r_in );
-    double r_thickness = r_out - r_in;
+    auto d = 148.15*mm;
+    auto h = 256.6*mm;
+    // auto h = 2*d*cos ( 30*deg );
+    auto side_in  = r_out/r_in;
 
+    face f_in;
+    f_in.z = r_in;
+    f_in.A = {0   ,    d};
+    f_in.B = {h/2 ,  d/2};
+    f_in.C = {h/2 , -d/2};
+    f_in.D = {0  ,    -d};
+    f_in.E = {-h/2, -d/2};
+    f_in.F = {-h/2,  d/2};
 
-    double side_out = 148.15*mm;
-    double side_in  = side_out*r_in/r_out;
+    face f_out;
+    f_out.z = r_out;
+    f_out.A = {0   ,    s*d};
+    f_out.B = {h/2 ,  s*d/2};
+    f_out.C = {h/2 , -s*d/2};
+    f_out.D = {0  ,    -s*d};
+    f_out.E = {-h/2, -s*d/2};
+    f_out.F = {-h/2,  s*d/2};
 
-    double apothem_out = side_out*sin ( 60*deg );
-
-
-    auto pxfc_in = [&] ( int i ) {
-        return side_out * std::cos ( M_PI / 3. * i );
-    };
-
-    auto pxfc = [&] ( int i ) {
-        return side_out * std::cos ( M_PI / 3. * i );
-    };
-    auto pyfc = [&] ( int i ) {
-        return side_out * std::sin ( M_PI / 3. * i );
-    };
 
     using Vertex = TessellatedSolid::Vertex;
     std::vector<Vertex> vertices;
     vertices.reserve ( 16 );
 
-    for ( unsigned int i = 0; i < 6; i++ ) {
-        vertices.emplace_back ( Vertex ( pxfc_in ( i ), pyfc ( i ), r_in ) );
-        vertices.emplace_back ( Vertex ( pxfc ( i ), pyfc ( i ), r_out ) );
-    }
-    vertices.emplace_back ( Vertex ( 0, 0, r_in ) );
-    vertices.emplace_back ( Vertex ( 0, 0, r_out ) );
+    vertices.emplace_back ( Vertex ( f_in.A.x, f_in.A.y, f_in.z ) );
+    vertices.emplace_back ( Vertex ( f_out.A.x, f_out.A.y, f_out.z ) );
+    vertices.emplace_back ( Vertex ( f_in.B.x, f_in.B.y, f_in.z ) );
+    vertices.emplace_back ( Vertex ( f_out.B.x, f_out.B.y, f_out.z ) );
+    vertices.emplace_back ( Vertex ( f_in.C.x, f_in.C.y, f_in.z ) );
+    vertices.emplace_back ( Vertex ( f_out.C.x, f_out.C.y, f_out.z ) );
+    vertices.emplace_back ( Vertex ( f_in.D.x, f_in.D.y, f_in.z ) );
+    vertices.emplace_back ( Vertex ( f_out.D.x, f_out.D.y, f_out.z ) );
+    vertices.emplace_back ( Vertex ( f_in.E.x, f_in.E.y, f_in.z ) );
+    vertices.emplace_back ( Vertex ( f_out.E.x, f_out.E.y, f_out.z ) );
+    vertices.emplace_back ( Vertex ( f_in.F.x, f_in.F.y, f_in.z ) );
+    vertices.emplace_back ( Vertex ( f_out.F.x, f_out.F.y, f_out.z ) );
+
+    vertices.emplace_back ( Vertex ( f_in.O.x, f_in.O.y, f_in.z ) );
+    vertices.emplace_back ( Vertex ( f_out.O.x, f_out.O.y, f_out.z ) );
+
+    // for ( unsigned int i = 0; i < 6; i++ ) {
+    //     vertices.emplace_back ( Vertex ( pxfc_in ( i ), pyfc ( i ), r_in ) );
+    //     vertices.emplace_back ( Vertex ( pxfc ( i ), pyfc ( i ), r_out ) );
+    // }
+    // vertices.emplace_back ( Vertex ( 0, 0, r_in ) );
+    // vertices.emplace_back ( Vertex ( 0, 0, r_out ) );
+
 
 
 
 
     TessellatedSolid shape ( "kk", vertices );
+    shape->AddFacet(13,1,11);
+    shape->AddFacet(13,3, 1 );
+    shape->AddFacet(13,5, 3 );
+    shape->AddFacet(13,7,5 );
+    shape->AddFacet(13,9,7 );
+    shape->AddFacet(13,11,9);
 
-    for ( unsigned int i = 1; i <= 11; i+=2 ) {
-        // top base
-        shape->AddFacet ( 13, i, ( ( i+2 ) % 12 ) );
-        // bottom
-        shape->AddFacet ( 12, ( ( i+1 ) % 12 ), i-1 );
-    }
+    shape->AddFacet(6,7,9);
+    shape->AddFacet(6,9,8);
+    shape->AddFacet(8,9,11,10);
+    shape->AddFacet(0,10,11);
+    shape->AddFacet(0,11,1);
+    shape->AddFacet(0,1,3);
+    shape->AddFacet(0,3,2);
+    shape->AddFacet(2,3,5,4);
+    shape->AddFacet(6,4,5);
+    shape->AddFacet(6,5,7);
 
-    // sides of the cell
-    for ( unsigned int side_n = 0; side_n<6; ++side_n ) {
-        int vx_bottom_left  = ( 2*side_n ) % 12;
-        int vx_top_left     = ( vx_bottom_left+1 ) % 12 ;
-        int vx_top_right    = ( vx_bottom_left+3 ) % 12;
-        int vx_bottom_right = ( vx_bottom_left+2 ) % 12;
-        shape->AddFacet ( vx_bottom_left, vx_bottom_right, vx_top_right, vx_top_left );
-    }
+
+    shape->AddFacet(12,0,2);
+    shape->AddFacet(12,10,0);
+    shape->AddFacet(12,8,10);
+    shape->AddFacet(12,6,8);
+    shape->AddFacet(12,4,6);
+    shape->AddFacet(12,2,4);
+
+
+
+
+
+
+
+
+    // for ( unsigned int i = 1; i <= 11; i+=2 ) {
+    //     // top base
+    //     shape->AddFacet ( 13, i, ( ( i+2 ) % 12 ) );
+    //     // bottom
+    //     shape->AddFacet ( 12, ( ( i+1 ) % 12 ), i-1 );
+    // }
+
+    // // sides of the cell
+    // for ( unsigned int side_n = 0; side_n<6; ++side_n ) {
+    //     int vx_bottom_left  = ( 2*side_n ) % 12;
+    //     int vx_top_left     = ( vx_bottom_left+1 ) % 12 ;
+    //     int vx_top_right    = ( vx_bottom_left+3 ) % 12;
+    //     int vx_bottom_right = ( vx_bottom_left+2 ) % 12;
+    //     shape->AddFacet ( vx_bottom_left, vx_bottom_right, vx_top_right);
+    //     shape->AddFacet (   vx_bottom_left      , vx_top_left, vx_top_right );
+    // }
 
 
 
@@ -121,8 +192,8 @@ static Ref_t tricky_pyramidal_cell ( Detector &desc, xml::Handle_t handle, Sensi
     std::vector<double> zplanes = { r_in, r_out *cos(hex_aperture) };
     std::vector<double> rs = {hex_side_in*sin(60*deg), hex_side_out*sin(60*deg) };
     /// Hexagonal pyramid
-    Polyhedra shape ( "mypyramid", 6, 30 * deg, 360 * deg, zplanes, rs );
-
+    // Polyhedra shape ( "mypyramid", 6, 30 * deg, 360 * deg, zplanes, rs );
+    auto shape = CreatePyramid_v2();
 
 
     /// rotation of 90deg around Y axis, to align Z axis of pyramid with X axis of cylinder
@@ -240,7 +311,9 @@ static Ref_t create_barrel_cell(Detector &desc, xml::Handle_t handle, SensitiveD
   std::vector<double> zplanes = { vessel_inner_r, vessel_outer_r };
   std::vector<double> rs = { 0.75*hexagon_side_length, 0.95*hexagon_side_length };
   /// Hexagonal pyramid
+
   Polyhedra shape("mypyramid", 6, 30 * deg, 360 * deg, zplanes, rs);
+
   /// rotation of 90deg around Y axis, to align Z axis of pyramid with X axis of cylinder
   Transform3D pyramidTr(RotationZYX(0, -90. * deg, 0. * deg), Translation3D(0, 0, 0));
 
@@ -317,6 +390,6 @@ static Ref_t create_barrel_cell(Detector &desc, xml::Handle_t handle, SensitiveD
 
 
 
-DECLARE_DETELEMENT ( TRICKY_PYR_TYPE, create_barrel_cell )
+DECLARE_DETELEMENT ( TRICKY_PYR_TYPE, tricky_pyramidal_cell )
 
 
